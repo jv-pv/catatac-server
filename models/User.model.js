@@ -4,8 +4,10 @@ const userSchema = new Schema(
   {
     email: {
       type: String,
-      unique: true,
       required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
     },
     password: {
       type: String,
@@ -14,7 +16,23 @@ const userSchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
+    address: {
+      street: String,
+      city: String,
+      state: String,
+      zipCode: String
+    },
+    phoneNumber: {
+      type: String,
+      trim: true,
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    }
   },
   {
     timestamps: true,
