@@ -1,35 +1,38 @@
-var express = require('express');
-var logger = require('morgan');
+const express = require("express");
+const logger = require("morgan");
+const cors = require("cors");
+const mongoose = require("mongoose");
 
-var cors = require('cors')
-var mongoose = require('mongoose')
+// const indexRouter = require('./routes/index');
+const usersRouter = require("./routes/users");
+const authRouter = require("./routes/auth");
+const productRouter = require("./routes/products");
+const reviewsRouter = require("./routes/reviews");
 
-// var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var authRouter = require('./routes/auth')
- 
-var app = express();
+const app = express();
 
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.set('trust proxy', 1);
-app.enable('trust proxy');
+app.set("trust proxy", 1);
+app.enable("trust proxy");
 
 app.use(
-    cors({
-      origin: [process.env.REACT_APP_URI]  // <== URL of our future React app
-    })
-  );
+  cors({
+    origin: [process.env.REACT_APP_URI], // <== URL of our future React app
+  })
+);
 
 // app.use(
 //     cors()
 //   );
 
 // app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/auth', authRouter)
+app.use("/users", usersRouter);
+app.use("/auth", authRouter);
+app.use("/products", productRouter);
+app.use("/reviews", reviewsRouter);
 
 mongoose
   .connect(process.env.MONGO_DB_URI)
