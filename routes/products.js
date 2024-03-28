@@ -7,7 +7,13 @@ const isAdmin = require("../middleware/isAdmin");
 
 router.get("/", async (req, res, next) => {
   try {
-    const foundProducts = await Product.find().populate("reviews");
+    const foundProducts = await Product.find().populate({
+      path: "reviews",
+      populate: {
+        path: "user",
+        select: "name",
+      }
+    });
     res.status(201).json(foundProducts);
   } catch (error) {
     console.error("Error finding products", error);
@@ -18,7 +24,13 @@ router.get("/", async (req, res, next) => {
 router.get("/details/:productId", async (req, res, next) => {
   const { productId } = req.params;
   try {
-    const foundProduct = await Product.findById(productId).populate("reviews");
+    const foundProduct = await Product.findById(productId).populate({
+      path: "reviews",
+      populate: {
+        path: "user",
+        select: "name",
+      }
+    });
     res.status(201).json(foundProduct);
   } catch (error) {
     console.error(`Error finding product ${productId}`, error);
@@ -64,7 +76,7 @@ router.put("/update/:productId", isAuthenticated, isAdmin, async (req, res, next
 });
 
 
-// protect this route
+// protect this route // Consider the orphaned reviews in the DB when a product is deleted.
 router.delete("/delete/:productId", isAuthenticated, isAdmin, async (req, res, next) => {
   const { productId } = req.params;
   if (!mongoose.Types.ObjectId.isValid(productId)) {
