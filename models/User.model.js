@@ -28,6 +28,8 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    reviews: [{type: Schema.Types.ObjectId, ref: "Review"}],
+    cart: [{product:{type: Schema.Types.ObjectId, ref: "Product"}, quantity: {type: Number, default: 1}}],
     role: {
       type: String,
       enum: ["user", "admin"],
