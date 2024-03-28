@@ -4,6 +4,8 @@ const mongoose = require("mongoose")
 const Product = require("../models/Product.model");
 const isAuthenticated = require("../middleware/isAuthenticated");
 const isAdmin = require("../middleware/isAdmin");
+const Review = require("../models/Review.model");
+const User = require("../models/User.model");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -78,18 +80,29 @@ router.put("/update/:productId", isAuthenticated, isAdmin, async (req, res, next
 
 // protect this route // Consider the orphaned reviews in the DB when a product is deleted.
 router.delete("/delete/:productId", isAuthenticated, isAdmin, async (req, res, next) => {
-  const { productId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(productId)) {
-    res.status(400).json({ errorMsg: "Specified Id is not valid" });
-    return;
+    const { productId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      res.status(400).json({ errorMsg: "Specified Id is not valid" });
+      return;
+    }
+    try {
+      const deletedProduct = await Product.findByIdAndDelete(productId);
+
+      if (deletedProduct) {
+        await Review.deleteMany({ product: productId });
+
+        await User.updateMany(
+          { reviews: { $in: deletedProduct.reviews } },
+          { $pull: { reviews: { $in: deletedProduct.reviews } } }
+        );
+      }
+
+      res.status(201).json({ message: "Product and associated reviews successfully deleted" });
+    } catch (error) {
+      console.error(`Failed to delete product ${productId}`, error);
+      res.json({ errorMsg: `Failed to delete product ${productId}`, error });
+    }
   }
-  try {
-    const deletedProduct = await Product.findByIdAndDelete(productId);
-    res.status(201).json(deletedProduct);
-  } catch (error) {
-    console.error(`Failed to delete product ${productId}`, error);
-    res.json({ errorMsg: `Failed to delete product ${productId}`, error });
-  }
-});
+);
 
 module.exports = router;
