@@ -12,8 +12,8 @@ const isAuthenticated = (req, res, next) => {
     req.user = tokenInfo;
     next();
   } catch (error) {
-    console.log(error.message, "Error.message")
-    return res.status(401).json(error);
+    console.log(error.message, "There was an error");
+    return res.status(401).json({ message: "Invalid token" });
   }
   
 };
