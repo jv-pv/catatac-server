@@ -17,7 +17,13 @@ router.get("/", isAuthenticated, isAdmin, async (req, res, next) => {
 router.get("/profile/:userId", isAuthenticated, async (req, res, next) => {
   const { userId } = req.params;
   try {
-    const foundUser = await User.findById(userId).populate("reviews");
+    const foundUser = await User.findById(userId).populate({
+      path: "reviews",
+      populate: {
+        path: "product",
+        select: "name"
+      }
+    });
     res.status(200).json(foundUser);
   } catch (error) {
     console.error(`Error finding user ${userId}`, error);
@@ -25,7 +31,7 @@ router.get("/profile/:userId", isAuthenticated, async (req, res, next) => {
   }
 });
 
-router.put("/profile/update/:userId", isAuthenticated, async (req, res, next) => {
+router.put("/profile/edit/:userId", isAuthenticated, async (req, res, next) => {
     const { userId } = req.params;
     try {
       const foundUserToUpdate = await User.findByIdAndUpdate(userId, req.body, { new: true });
