@@ -43,11 +43,11 @@ router.post('/signup', (req, res, next) => {
    
         User.create({ email, password: hashedPassword, name })
         .then((createdUser) => {
-          const { email, name, _id } = createdUser;
+          const { email, name, _id, role } = createdUser;
         
           const user = { email, name, _id };
 
-          const payload = { _id, email, name };
+          const payload = { _id, email, name, role};
    
           // Create and sign the token
           const authToken = jwt.sign( 
@@ -98,9 +98,9 @@ router.post('/signup', (req, res, next) => {
         const passwordCorrect = bcrypt.compareSync(password, foundUser.password);
    
         if (passwordCorrect) {
-          const { _id, email, name } = foundUser;
+          const { _id, email, name , role} = foundUser;
           
-          const payload = { _id, email, name };
+          const payload = { _id, email, name, role };
    
           const authToken = jwt.sign( 
             payload,
