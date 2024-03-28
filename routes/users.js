@@ -61,11 +61,13 @@ router.patch("/cart", isAuthenticated, async (req, res, next) => {
   console.log(req.user);
   const { cart } = req.body;
   try {
-    const foundUserCart = await User.findByIdAndUpdate(
-      req.user._id,
-      { cart: cart },
-      { new: true, runValidators: true }
-    );
+    const foundUserCart = await User.findByIdAndUpdate(req.user._id, { cart: cart }, { new: true, runValidators: true }).populate({
+      path: "cart",
+      populate: {
+        path: "product",
+        select: "name price"
+      }
+    })
     res.status(200).json(foundUserCart);
   } catch (error) {
     console.error("There was an error adding to cart", error);
@@ -74,5 +76,7 @@ router.patch("/cart", isAuthenticated, async (req, res, next) => {
       .json({ errorMsg: "There was an error adding to cart", error });
   }
 });
+
+
 
 module.exports = router;
