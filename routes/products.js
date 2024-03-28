@@ -30,9 +30,9 @@ router.get("/details/:productId", async (req, res, next) => {
 // protect this route
 router.post("/", isAuthenticated, async (req, res, next) => {
   const { imageUrl, name, description, price, stock } = req.body;
-  if(req.user.role !== "admin"){
-    return
-  }
+//   if(req.user.role !== "admin"){
+//     return
+//   }
   try {
     const createdProduct = await Product.create({
       imageUrl,
@@ -52,9 +52,9 @@ router.post("/", isAuthenticated, async (req, res, next) => {
 // protect this route
 router.put("/update/:productId", isAuthenticated,  async (req, res, next) => {
   const { productId } = req.params;
-  if(req.user.role !== "admin"){
-    return
-  }
+//   if(req.user.role !== "admin"){
+//     return
+//   }
   if (!mongoose.Types.ObjectId.isValid(productId)) {
     res.status(400).json({ errorMsg: "Specified Id is not valid" });
     return;
@@ -72,9 +72,9 @@ router.put("/update/:productId", isAuthenticated,  async (req, res, next) => {
 // protect this route
 router.delete("/delete/:productId", isAuthenticated, async (req, res, next) => {
   const { productId } = req.params;
-  if(req.user.role !== "admin"){
-    return
-  }
+//   if(req.user.role !== "admin"){
+//     return
+//   }
   if (!mongoose.Types.ObjectId.isValid(productId)) {
     res.status(400).json({ errorMsg: "Specified Id is not valid" });
     return;
