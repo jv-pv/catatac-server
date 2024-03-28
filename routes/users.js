@@ -5,7 +5,7 @@ const User = require("../models/User.model");
 
 router.get("/", isAuthenticated, async (req, res, next) => {
   try {
-    const foundUsers = await User.find();
+    const foundUsers = await User.find().populate("reviews")
     res.status(200).json(foundUsers);
   } catch (error) {
     console.error("Error finding users", error);
@@ -16,7 +16,7 @@ router.get("/", isAuthenticated, async (req, res, next) => {
 router.get("/profile/:userId", isAuthenticated, async (req, res, next) => {
   const { userId } = req.params
   try {
-    const foundUser = await User.findById(userId)
+    const foundUser = await User.findById(userId).populate("reviews")
     res.status(200).json(foundUser)
   } catch (error) {
     console.error(`Error finding user ${userId}`, error);
