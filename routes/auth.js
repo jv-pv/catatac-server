@@ -53,7 +53,7 @@ router.post('/signup', (req, res, next) => {
           const authToken = jwt.sign( 
             payload,
             process.env.SECRET,
-            { algorithm: 'HS256', expiresIn: "1h" }
+            { algorithm: 'HS256', expiresIn: "3h" }
           );
      
           res.status(201).json({ user, authToken });
