@@ -19,13 +19,14 @@ const userSchema = new Schema(
       trim: true,
     },
     address: {
-      street: String,
-      city: String,
-      state: String,
-      zipCode: String
+      street: {type: String, default: ""},
+      city: {type: String, default: ""},
+      state: {type: String, default: ""},
+      zipCode: {type: String, default: ""}
     },
     phoneNumber: {
       type: String,
+      default: "",
       trim: true,
     },
     reviews: [{type: Schema.Types.ObjectId, ref: "Review"}],
