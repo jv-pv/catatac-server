@@ -19,23 +19,23 @@ const userSchema = new Schema(
       trim: true,
     },
     address: {
-      street: {type: String, default: ""},
-      city: {type: String, default: ""},
-      state: {type: String, default: ""},
-      zipCode: {type: String, default: ""}
+      street: { type: String, default: "" },
+      city: { type: String, default: "" },
+      state: { type: String, default: "" },
+      zipCode: { type: String, default: "" },
     },
     phoneNumber: {
       type: String,
       default: "",
       trim: true,
     },
-    reviews: [{type: Schema.Types.ObjectId, ref: "Review"}],
-    cart: [{product:{type: Schema.Types.ObjectId, ref: "Product"}, quantity: {type: Number, default: 1}}],
+    reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
+    cart: {type: Schema.Types.ObjectId, ref: "Cart"},
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
-    }
+    },
   },
   {
     timestamps: true,
