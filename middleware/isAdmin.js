@@ -11,7 +11,6 @@ const isAdmin = async (req, res, next) => {
   try {
     const tokenInfo = jwt.verify(token, process.env.SECRET);
     const user = await User.findById(tokenInfo._id);
-    console.log(tokenInfo, user);
     if (!user || user.role !== "admin") {
       return res.status(403).json({ errorMsg: "Admin access required" });
     }
