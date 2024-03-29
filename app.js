@@ -8,6 +8,7 @@ const usersRouter = require("./routes/users");
 const authRouter = require("./routes/auth");
 const productsRouter = require("./routes/products");
 const reviewsRouter = require("./routes/reviews");
+const cartRouter = require("./routes/cart");
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/users", usersRouter);
 app.use("/auth", authRouter);
 app.use("/products", productsRouter);
 app.use("/reviews", reviewsRouter);
+app.use("/cart", cartRouter);
 
 mongoose
   .connect(process.env.MONGO_DB_URI)
