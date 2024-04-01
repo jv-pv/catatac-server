@@ -5,37 +5,30 @@ const Cart = require("../models/Cart.model");
 
 // Get all items in the cart
 
-router.get("/", isAuthenticated, async (req, res, next) => {
+router.get("/", isAuthenticated, async (req, res) => {
+  const userId = req.user._id;
   try {
-    const userId = req.user._id;
+    const userCart = await Cart.findOne({ user: userId }).populate("cart.product");
 
-    const userCart = await Cart.findOne({ user: userId });
-
-    const populatedCard = await userCart.populate("cart.product");
-
-    res.json(userCart.cart);
+    res.status(202).json(userCart);
   } catch (error) {
-    console.error("Error retrieving cart", error);
-    res.status(500).json({ error: "Server error" });
+    console.error("Error adding product to cart", error);
+    res.status(500).json({ errorMsg: "Server error" });
   }
 });
 
-// Add items to cart
-
+// Add item to the cart
 router.post("/add", isAuthenticated, async (req, res, next) => {
+  const userId = req.user._id;
+  const { productId, quantity } = req.body;
   try {
-    const { productId, quantity } = req.body;
-    const userId = req.user._id;
-
     let userCart = await Cart.findOne({ user: userId });
 
     if (!productId) {
-      return res.status(404).json({ errorMsg: "Product not found" });
+      return res.status(404).json({ errorMsg: "Product does not exist" });
     }
 
-    const existingProduct = userCart.cart.find(
-      (item) => item.product.toString() === productId
-    );
+    const existingProduct = userCart.cart.find((item) => item.product.toString() === productId);
 
     if (existingProduct) {
       existingProduct.quantity += quantity;
@@ -43,37 +36,67 @@ router.post("/add", isAuthenticated, async (req, res, next) => {
       userCart.cart.push({ product: productId, quantity });
     }
 
-    userCart = await userCart.save();
+    userCart = await userCart.populate("cart.product");
 
-    res.json(userCart);
+    userCart = await userCart.save();
+    res.status(201).json(userCart);
   } catch (error) {
     console.error("Could not add item to cart", error);
     res.status(500).json({ errorMsg: "Server Error", error });
   }
 });
 
-// Remove a specific item from the cart
+// Remove an item form the cart by it's ID
 
-router.delete("/remove/:productId", isAuthenticated, async (req, res, next) => {
+router.delete("/remove/:productId", isAuthenticated, async (req, res) => {
+  const { productId } = req.params;
+  const userId = req.user._id;
   try {
-    const { productId } = req.params;
-    const userId = req.user._id;
-    console.log("productId", productId);
-    let userCart = await Cart.findOneAndUpdate(
+    const userCart = await Cart.findOneAndUpdate(
       { user: userId },
       { $pull: { cart: { product: productId } } },
       { new: true }
-    );
+    ).populate("cart.product");
 
-    res.json(userCart);
+    res.status(202).json(userCart);
   } catch (error) {
     console.error("Error removing product from cart", error);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ errorMsg: "Server error" });
   }
 });
 
-
 // Increment quantity of a product in the cart
+router.patch("/increment/:productId", isAuthenticated, async (req, res, next) => {
+  const userId = req.user._id;
+  const { productId } = req.params;
+  try {
+    let userCart = await Cart.findOneAndUpdate(
+      { user: userId, "cart.product": productId },
+      { $inc: { "cart.$.quantity": 1 } },
+      { new: true }
+    );
+    res.status(202).json(userCart);
+  } catch (error) {
+    console.error("Error incrementing product quantity", error);
+    res.status(500).json({ errorMsg: "Server Error" });
+  }
+});
+
 // Decrement quantity of a product in the cart
+router.patch("/decrement/:productId", isAuthenticated, async (req, res, next) => {
+    const userId = req.user._id;
+    const { productId } = req.params;
+    try {
+      let userCart = await Cart.findOneAndUpdate(
+        { user: userId, "cart.product": productId },
+        { $inc: { "cart.$.quantity": -1 } },
+        { new: true }
+      );
+      res.status(202).json(userCart);
+    } catch (error) {
+      console.error("Error incrementing product quantity", error);
+      res.status(500).json({ errorMsg: "Server Error" });
+    }
+});
 
 module.exports = router;
