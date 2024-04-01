@@ -53,7 +53,7 @@ router.post("/", isAuthenticated, isAdmin ,async (req, res, next) => {
       price,
       stock,
     });
-    res.status(201).json(createdProduct);
+    res.status(201).json({createdProduct, successMsg: "Successfully added product"});
   } catch (error) {
     console.error("There was an error creating product", error);
     res.status(500).json({ errorMsg: "Coåuld not create product", error });
