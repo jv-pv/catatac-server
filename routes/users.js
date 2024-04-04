@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const isAuthenticated = require("../middleware/isAuthenticated");
 const User = require("../models/User.model");
+const Cart = require("../models/Cart.model");
 const isAdmin = require("../middleware/isAdmin");
 
 router.get("/", isAuthenticated, isAdmin, async (req, res, next) => {
@@ -43,19 +44,43 @@ router.put("/profile/edit/:userId", isAuthenticated, async (req, res, next) => {
   }
 );
 
+
 router.delete("/profile/delete/:userId", isAuthenticated, async (req, res, next) => {
-    const { userId } = req.params;
-    try {
-      const foundUserToDelete = await User.findByIdAndDelete(userId);
-      res.status(200).json(foundUserToDelete);
-    } catch (error) {
-      console.error(`Error deleting user ${userId}`, error);
-      res
-        .status(500)
-        .json({ errorMsg: "Error deleting your user account", error });
+  const { userId } = req.params;
+  try {
+    // Find the user by ID
+    const foundUserToDelete = await User.findById(userId);
+
+    if (foundUserToDelete) {
+      // Delete the user's cart
+      await Cart.findByIdAndDelete(foundUserToDelete.cart);
+
+      // Delete the user
+      await User.findByIdAndDelete(userId);
+
+      res.status(200).json({ message: "User and associated cart deleted successfully" });
+    } else {
+      res.status(404).json({ errorMsg: "User not found" });
     }
+  } catch (error) {
+    console.error(`Error deleting user ${userId}`, error);
+    res.status(500).json({ errorMsg: "Error deleting your user account", error });
   }
-);
+});
+
+// router.delete("/profile/delete/:userId", isAuthenticated, async (req, res, next) => {
+//     const { userId } = req.params;
+//     try {
+//       const foundUserToDelete = await User.findByIdAndDelete(userId);
+//       res.status(200).json(foundUserToDelete);
+//     } catch (error) {
+//       console.error(`Error deleting user ${userId}`, error);
+//       res
+//         .status(500)
+//         .json({ errorMsg: "Error deleting your user account", error });
+//     }
+//   }
+// );
 
 // router.patch("/cart", isAuthenticated, async (req, res, next) => {
 //   console.log(req.user);
