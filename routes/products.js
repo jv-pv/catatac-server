@@ -56,7 +56,7 @@ router.post("/", isAuthenticated, isAdmin ,async (req, res, next) => {
     res.status(201).json({createdProduct, successMsg: "Successfully added product"});
   } catch (error) {
     console.error("There was an error creating product", error);
-    res.status(500).json({ errorMsg: "Coåuld not create product", error });
+    res.status(500).json({ errorMsg: "Could not create product", error });
   }
 });
 
@@ -70,7 +70,7 @@ router.put("/update/:productId", isAuthenticated, isAdmin, async (req, res, next
   }
   try {
     const updatedProduct = await Product.findByIdAndUpdate(productId, req.body, { new: true }).populate("reviews");
-    res.status(201).json(updatedProduct);
+    res.status(201).json({updatedProduct, successMsg: "Successfully edited product"});
   } catch (error) {
     console.error("There was an updating the product", error);
     res.status(500).json({ errorMsg: "Could not update product", error });
