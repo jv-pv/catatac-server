@@ -17,7 +17,7 @@ router.post('/signup', async (req, res, next) => {
         const { email, password, name } = req.body;
 
         if (!email || !password || !name) {
-            res.status(400).json({ message: "Provide email, password, or name" });
+            res.status(400).json({ message: "Provide email, password, or name." });
             return;
         }
 
@@ -27,11 +27,11 @@ router.post('/signup', async (req, res, next) => {
             return;
         }
 
-        // const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
-        // if (!passwordRegex.test(password)) {
-        //     res.status(400).json({ message: 'Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.' });
-        //     return;
-        // }
+        const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
+        if (!passwordRegex.test(password)) {
+            res.status(400).json({ message: 'Password must have at least 6 characters and contain at least one number, one lowercase and one uppercase letter.' });
+            return;
+        }
 
         const foundUser = await User.findOne({ email });
         if (foundUser) {
