@@ -9,6 +9,7 @@ const authRouter = require("./routes/auth");
 const productsRouter = require("./routes/products");
 const reviewsRouter = require("./routes/reviews");
 const cartRouter = require("./routes/cart");
+const photosRouter = require("./routes/photos");
 
 const app = express();
 
@@ -35,14 +36,11 @@ app.use("/auth", authRouter);
 app.use("/products", productsRouter);
 app.use("/reviews", reviewsRouter);
 app.use("/cart", cartRouter);
+app.use("/photos", photosRouter);
 
 mongoose
   .connect(process.env.MONGO_DB_URI)
-  .then((x) =>
-    console.log(
-      `Connected to Mongo 🥭! Database name: "${x.connections[0].name}"`
-    )
-  )
+  .then((x) => console.log(`Connected to Mongo 🥭! Database name: "${x.connections[0].name}"`))
   .catch((err) => console.error("Error connecting to mongo", err));
 
 module.exports = app;
