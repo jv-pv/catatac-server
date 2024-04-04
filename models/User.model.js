@@ -19,10 +19,11 @@ const userSchema = new Schema(
       trim: true,
     },
     address: {
-      street: { type: String, default: "" },
-      city: { type: String, default: "" },
-      state: { type: String, default: "" },
-      zipCode: { type: String, default: "" },
+      street: { type: String, default: "", trim: true },
+      city: { type: String, default: "", trim: true },
+      state: { type: String, default: "", trim: true },
+      country: {type: String, default: "", trim: true},
+      zipCode: { type: String, default: "", trim: true },
     },
     phoneNumber: {
       type: String,
